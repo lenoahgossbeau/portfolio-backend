@@ -1,0 +1,19 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Parcours Académique</title>
+</head>
+<body>
+    <h1>Mon Parcours Académique</h1>
+    <div class="career-list">
+        {% for item in academic_career %}
+        <div class="career-item">
+            <h2>{{ item.title_formation }}</h2>
+            <p>Année: {{ item.year }}</p>
+            <p>Diplôme: {{ item.diplome }}</p>
+            <p>{{ item.description }}</p>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>

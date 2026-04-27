@@ -1,0 +1,18 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Cours</title>
+</head>
+<body>
+    <h1>Mes Cours</h1>
+    <div class="cours-list">
+        {% for item in cours %}
+        <div class="cours-item">
+            <h2>{{ item.title }}</h2>
+            <p>Année: {{ item.year }}</p>
+            <p>{{ item.description }}</p>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>

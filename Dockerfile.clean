@@ -1,0 +1,32 @@
+﻿FROM python:3.11-slim
+
+WORKDIR /app
+
+# Installation des dépendances système
+RUN apt-get update && apt-get install -y \
+    gcc \
+    postgresql-client \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copie et installation des dépendances Python
+COPY requirements.txt .
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt && \
+    # Installation GARANTIE de email-validator
+    pip install --no-cache-dir email-validator==2.1.1 && \
+    python -c "import email_validator; print('   ✅ email-validator installé')"
+
+# Copie du code source
+COPY . .
+
+# Création utilisateur non-root
+RUN useradd -m -u 1000 fastapi-user && \
+    chown -R fastapi-user:fastapi-user /app
+USER fastapi-user
+
+EXPOSE 8000
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
+    CMD python -c "import requests; requests.get('http://localhost:8000/health', timeout=5)" || exit 1
+
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]

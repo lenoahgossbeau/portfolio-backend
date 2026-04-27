@@ -1,0 +1,72 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.venv
+pip-log.txt
+pip-delete-this-directory.txt
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Environment
+.env
+.env.local
+.env.*.local
+.env.render
+.env.production
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+*.log
+logs/
+
+# Next.js / Frontend (NE PAS VERSIONNER DANS LE BACKEND)
+portfolio/.next/
+portfolio/node_modules/
+portfolio/out/
+portfolio/build/
+portfolio/.env.local
+portfolio/package-lock.json
+
+# Fichiers volumineux
+*.tar
+*.gz
+*.zip
+*.pdf
+*.tmp
+*.csv
+test_*.pdf
+test_*.csv
+
+# Backup
+*.backup
+*.bak
+
+# Docker
+*.pid
+
+# Secrets
+*.key
+*.pem

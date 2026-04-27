@@ -1,0 +1,18 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Distinctions</title>
+</head>
+<body>
+    <h1>Mes Distinctions</h1>
+    <div class="distinctions-list">
+        {% for distinction in distinctions %}
+        <div class="distinction-item">
+            <h2>{{ distinction.title }}</h2>
+            <p>Année: {{ distinction.year }}</p>
+            <p>{{ distinction.description }}</p>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>

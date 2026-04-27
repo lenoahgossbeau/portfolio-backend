@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}{{ t.get('nav_login', 'Login') }}{% endblock %}
+
+{% block content %}
+<h1>{{ t.get('login_title', 'Login') }}</h1>
+
+<div class="form-card">
+    {% if error %}
+        <div class="error-message">{{ error }}</div>
+    {% endif %}
+
+    <!-- Formulaire de login -->
+    <form id="loginForm">
+        <!-- Champ utilisateur -->
+        <label for="username">{{ t.get('login_label_username', 'Username') }}</label>
+        <input type="text" name="username" id="username" placeholder="{{ t.get('login_placeholder_username', '') }}" required>
+
+        <!-- Champ mot de passe -->
+        <label for="password">{{ t.get('login_label_password', 'Password') }}</label>
+        <div class="password-wrapper">
+            <input type="password" name="password" id="password" placeholder="{{ t.get('login_placeholder_password', '') }}" required>
+            <span class="toggle-icon" onclick="togglePassword()">👁️</span>
+        </div>
+
+        <!-- Bouton -->
+        <button type="submit">{{ t.get('login_btn_submit', 'Login') }}</button>
+    </form>
+
+    <!-- Lien vers inscription -->
+    <p style="text-align:center; margin-top:15px;">
+        {{ t.get('login_no_account', 'No account yet?') }}
+        <a href="/register">{{ t.get('login_register_link', 'Register here') }}</a>
+    </p>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function togglePassword() {
+    const input = document.getElementById("password");
+    const icon = document.querySelector(".toggle-icon");
+    if (input.type === "password") {
+        input.type = "text";
+        icon.textContent = "🙈";
+    } else {
+        input.type = "password";
+        icon.textContent = "👁️";
+    }
+}
+
+// ✅ Gestion du login avec stockage du token JWT
+document.getElementById("loginForm").addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
+
+    try {
+        const response = await fetch("/auth/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, password })
+        });
+
+        if (!response.ok) {
+            alert("Erreur de connexion : " + response.statusText);
+            return;
+        }
+
+        const data = await response.json();
+        if (data.access_token) {
+            localStorage.setItem("access_token", data.access_token); // ✅ stocke le token JWT
+            alert("Connexion réussie !");
+            window.location.href = "/audits"; // redirige vers la page audits
+        } else {
+            alert("Réponse inattendue du serveur.");
+        }
+    } catch (error) {
+        alert("Erreur réseau : " + error);
+    }
+});
+</script>
+{% endblock %}

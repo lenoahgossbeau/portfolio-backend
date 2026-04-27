@@ -1,0 +1,17 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Médias</title>
+</head>
+<body>
+    <h1>Mes Médias</h1>
+    <div class="media-list">
+        {% for item in media %}
+        <div class="media-item">
+            <h2>{{ item.title }}</h2>
+            <p>{{ item.description }}</p>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>
