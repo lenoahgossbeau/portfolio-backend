@@ -863,6 +863,17 @@ try:
                 return {"message": "Base déjà initialisée", "admin_exists": True}
         except Exception as e:
             return JSONResponse(status_code=500, content={"error": str(e)})
+        
+        # ===================== INIT CV TABLES (for Render) =====================
+    @app.post("/admin/init-cv-tables")
+    def create_cv_tables():
+        try:
+            from models.cv import Base
+            from database import engine
+            Base.metadata.create_all(bind=engine)
+            return {"message": "Tables CV créées avec succès"}
+        except Exception as e:
+            return JSONResponse(status_code=500, content={"error": str(e)})    
 
     print("✅ Application FastAPI configurée avec succès!")
 
