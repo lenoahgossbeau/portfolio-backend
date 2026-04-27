@@ -256,7 +256,11 @@ try:
     app.include_router(pdf_router)
     app.include_router(public_test_router, prefix="/api/public", tags=["Public Test"])
     app.include_router(admin_subscriptions_router)
+    print("🔧 Chargement du routeur CV...")
     app.include_router(cv_router)
+    print("✅ Routeur CV chargé")
+
+   
 
     # ===================== ROUTES DE TEST POUR LE RATE LIMITER =====================
     @app.get("/api/test-rate-limiter")
