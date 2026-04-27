@@ -833,6 +833,32 @@ try:
             pass
 
         return {"query": q, "count": len(results), "results": results}
+    
+        # ===================== INIT DB (for Render) =====================
+    @app.post("/admin/init-db")
+    def init_database(db: Session = Depends(get_db)):
+        try:
+            from auth.security import hash_password
+            from models.user import User
+            from database import Base, engine
+            
+            Base.metadata.create_all(bind=engine)
+            
+            admin = db.query(User).filter(User.email == 'admin@test.com').first()
+            if not admin:
+                admin = User(
+                    email='admin@test.com',
+                    password=hash_password('admin123'),
+                    role='admin',
+                    status='active'
+                )
+                db.add(admin)
+                db.commit()
+                return {"message": "Base initialisée avec succès", "admin_created": True}
+            else:
+                return {"message": "Base déjà initialisée", "admin_exists": True}
+        except Exception as e:
+            return JSONResponse(status_code=500, content={"error": str(e)})
 
     print("✅ Application FastAPI configurée avec succès!")
 
