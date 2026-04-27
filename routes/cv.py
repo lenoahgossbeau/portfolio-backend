@@ -123,7 +123,7 @@ def delete_soft_skill(skill_id: int, db: Session = Depends(get_db), current_user
     db.commit()
     return {"message": "Soft skill supprimée"}
 
-# ==================== LANGUAGES CRUD (CORRIGÉ) ====================
+# ==================== LANGUAGES CRUD ====================
 @router.post("/languages")
 def add_language(lang: dict, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     try:
@@ -131,7 +131,6 @@ def add_language(lang: dict, db: Session = Depends(get_db), current_user: User =
         if not profile:
             raise HTTPException(status_code=404, detail="Profil non trouvé")
         
-        # Accepter les deux formats possibles
         name = lang.get('name') or lang.get('language')
         level = lang.get('level')
         
@@ -175,15 +174,18 @@ def delete_language(lang_id: int, db: Session = Depends(get_db), current_user: U
     db.commit()
     return {"message": "Langue supprimée"}
 
-# ==================== DEGREES CRUD ====================
+# ==================== DEGREES CRUD (CORRIGÉ) ====================
 @router.post("/degrees")
 def add_degree(degree: DegreeCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     profile = db.query(Profile).filter(Profile.user_id == current_user.id).first()
     if not profile:
         raise HTTPException(status_code=404, detail="Profil non trouvé")
     
+    # S'assurer que l'année est une chaîne
+    year_str = str(degree.year) if degree.year else ""
+    
     db.execute(text("INSERT INTO degrees (profile_id, title, institution, year, description) VALUES (:pid, :title, :institution, :year, :desc)"),
-               {"pid": profile.id, "title": degree.title, "institution": degree.institution, "year": degree.year, "desc": degree.description})
+               {"pid": profile.id, "title": degree.title, "institution": degree.institution, "year": year_str, "desc": degree.description})
     db.commit()
     return {"message": "Diplôme ajouté"}
 
@@ -191,10 +193,12 @@ def add_degree(degree: DegreeCreate, db: Session = Depends(get_db), current_user
 def update_degree(degree_id: int, degree: DegreeCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     profile = db.query(Profile).filter(Profile.user_id == current_user.id).first()
     if not profile:
-        raise HTTPException(status_code_404, detail="Profil non trouvé")
+        raise HTTPException(status_code=404, detail="Profil non trouvé")
+    
+    year_str = str(degree.year) if degree.year else ""
     
     db.execute(text("UPDATE degrees SET title = :title, institution = :institution, year = :year, description = :desc WHERE id = :did AND profile_id = :pid"),
-               {"title": degree.title, "institution": degree.institution, "year": degree.year, "desc": degree.description, "did": degree_id, "pid": profile.id})
+               {"title": degree.title, "institution": degree.institution, "year": year_str, "desc": degree.description, "did": degree_id, "pid": profile.id})
     db.commit()
     return {"message": "Diplôme mis à jour"}
 
@@ -208,15 +212,18 @@ def delete_degree(degree_id: int, db: Session = Depends(get_db), current_user: U
     db.commit()
     return {"message": "Diplôme supprimé"}
 
-# ==================== EXPERIENCES CRUD ====================
+# ==================== EXPERIENCES CRUD (CORRIGÉ) ====================
 @router.post("/experiences")
 def add_experience(exp: ExperienceCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     profile = db.query(Profile).filter(Profile.user_id == current_user.id).first()
     if not profile:
         raise HTTPException(status_code=404, detail="Profil non trouvé")
     
+    # Gérer les dates nulles
+    end_date = exp.end_date if exp.end_date else None
+    
     db.execute(text("INSERT INTO experiences (profile_id, title, company, start_date, end_date, description) VALUES (:pid, :title, :company, :start, :end, :desc)"),
-               {"pid": profile.id, "title": exp.title, "company": exp.company, "start": exp.start_date, "end": exp.end_date, "desc": exp.description})
+               {"pid": profile.id, "title": exp.title, "company": exp.company, "start": exp.start_date, "end": end_date, "desc": exp.description})
     db.commit()
     return {"message": "Expérience ajoutée"}
 
@@ -226,8 +233,10 @@ def update_experience(exp_id: int, exp: ExperienceCreate, db: Session = Depends(
     if not profile:
         raise HTTPException(status_code=404, detail="Profil non trouvé")
     
+    end_date = exp.end_date if exp.end_date else None
+    
     db.execute(text("UPDATE experiences SET title = :title, company = :company, start_date = :start, end_date = :end, description = :desc WHERE id = :eid AND profile_id = :pid"),
-               {"title": exp.title, "company": exp.company, "start": exp.start_date, "end": exp.end_date, "desc": exp.description, "eid": exp_id, "pid": profile.id})
+               {"title": exp.title, "company": exp.company, "start": exp.start_date, "end": end_date, "desc": exp.description, "eid": exp_id, "pid": profile.id})
     db.commit()
     return {"message": "Expérience mise à jour"}
 
