@@ -41,13 +41,13 @@ def get_current_user(
     except JWTError:
         raise credentials_exception
 
-# ================== ADMIN ONLY ==================
+# ================== ADMIN ONLY (CORRIGÉ) ==================
 def get_current_admin(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ) -> User:
-    """Vérifie que l'utilisateur est admin, sinon log l'incident et refuse l'accès"""
-    if current_user.role != "admin":
+    """Vérifie que l'utilisateur est admin ou super_admin, sinon log l'incident et refuse l'accès"""
+    if current_user.role not in ["admin", "super_admin"]:
         audit_log = Audit(
             user_id=current_user.id,
             user_role=current_user.role,
@@ -59,6 +59,27 @@ def get_current_admin(
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Accès interdit ❌",
+        )
+    return current_user
+
+# ================== SUPER ADMIN ONLY ==================
+def get_current_super_admin(
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+) -> User:
+    """Vérifie que l'utilisateur est super_admin"""
+    if current_user.role != "super_admin":
+        audit_log = Audit(
+            user_id=current_user.id,
+            user_role=current_user.role,
+            action_description="Tentative d'accès non autorisé à une route super_admin"
+        )
+        db.add(audit_log)
+        db.commit()
+
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Accès réservé aux super administrateurs ❌",
         )
     return current_user
 

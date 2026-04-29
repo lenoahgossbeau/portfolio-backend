@@ -250,7 +250,7 @@ try:
     app.include_router(publication_router, prefix="/publications", tags=["Publications"])
     app.include_router(project_router, prefix="/projects", tags=["Projects"])
     app.include_router(admin_router)
-    app.include_router(admin_users_router, prefix="/admin/users", tags=["Admin Users"])
+    app.include_router(admin_users_router, tags=["Admin Users"])
     app.include_router(cours_router)
     app.include_router(dashboard_router)
     app.include_router(pdf_router)
